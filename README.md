@@ -7,7 +7,7 @@ A simplified Python implementation of nested logit demand estimation using Nevo'
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd econ-department-overview
+cd nested-logit-demand
 
 # Install dependencies using uv
 uv sync

@@ -1,14 +1,12 @@
 """
 Simple elasticity calculations for nested logit
 """
+
 import numpy as np
 
+
 def calculate_elasticities_simple(
-    shares: np.ndarray,
-    prices: np.ndarray,
-    nest_ids: np.ndarray,
-    alpha: float,
-    sigma: float
+    shares: np.ndarray, prices: np.ndarray, nest_ids: np.ndarray, alpha: float, sigma: float
 ) -> np.ndarray:
     """
     Calculate price elasticity matrix for nested logit model.
@@ -34,15 +32,17 @@ def calculate_elasticities_simple(
         for k in range(n_products):
             if j == k:
                 # Own-price elasticity
-                elasticity[j, k] = -alpha * prices[j] * (
-                    1 / (1 - sigma) - (1 - sigma) * shares[j] - sigma * within_shares[j]
+                elasticity[j, k] = (
+                    -alpha
+                    * prices[j]
+                    * (1 / (1 - sigma) - (1 - sigma) * shares[j] - sigma * within_shares[j])
                 )
             else:
                 # Cross-price elasticity
                 if nest_ids[j] == nest_ids[k]:
                     # Within nest
-                    elasticity[j, k] = alpha * prices[k] * (
-                        (1 - sigma) * shares[k] + sigma * within_shares[k]
+                    elasticity[j, k] = (
+                        alpha * prices[k] * ((1 - sigma) * shares[k] + sigma * within_shares[k])
                     )
                 else:
                     # Across nests

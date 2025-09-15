@@ -4,11 +4,13 @@ Simple Nested Logit Example with Nevo Cereal Data
 """
 
 import numpy as np
-from src.simple_data_loader import load_nevo_data_simple
-from src.simple_estimation import estimate_nested_logit_simple
-from src.simple_elasticity import calculate_elasticities_simple
 
-def main():
+from src.simple_data_loader import load_nevo_data_simple
+from src.simple_elasticity import calculate_elasticities_simple
+from src.simple_estimation import estimate_nested_logit_simple
+
+
+def main() -> None:
     print("=" * 70)
     print("NESTED LOGIT DEMAND ESTIMATION - NEVO CEREAL DATA")
     print("=" * 70)
@@ -19,16 +21,13 @@ def main():
     print(f"   - Loaded {len(df)} observations")
     print(f"   - Markets: {df['market_ids'].nunique()}")
     print(f"   - Products: {df['product_ids'].nunique()}")
-    print(f"   - Nests: 2 (mushy vs non-mushy cereals)")
+    print("   - Nests: 2 (mushy vs non-mushy cereals)")
 
     # Step 2: Estimate model
     print("\n2. Estimating nested logit model (OLS)...")
-    product_chars = ['sugar']  # Just use sugar as characteristic
+    product_chars = ["sugar"]  # Just use sugar as characteristic
 
-    results = estimate_nested_logit_simple(
-        data=df,
-        product_chars=product_chars
-    )
+    results = estimate_nested_logit_simple(data=df, product_chars=product_chars)
 
     # Step 3: Display results
     print("\n3. ESTIMATION RESULTS:")
@@ -67,23 +66,23 @@ def main():
     print("-" * 50)
 
     # Get first market data
-    market_1 = df[df['market_ids'] == df['market_ids'].iloc[0]].copy()
+    market_1 = df[df["market_ids"] == df["market_ids"].iloc[0]].copy()
 
     elasticity_matrix = calculate_elasticities_simple(
-        shares=market_1['shares'].values,
-        prices=market_1['prices'].values,
-        nest_ids=market_1['nest_id'].values,
+        shares=market_1["shares"].values,
+        prices=market_1["prices"].values,
+        nest_ids=market_1["nest_id"].values,
         alpha=results.alpha,
-        sigma=results.sigma
+        sigma=results.sigma,
     )
 
     # Own-price elasticities
     own_elasticities = np.diag(elasticity_matrix)
-    print(f"   Own-price elasticities (first 5 products):")
+    print("   Own-price elasticities (first 5 products):")
     for i in range(min(5, len(own_elasticities))):
-        print(f"     Product {i+1}: {own_elasticities[i]:7.4f}")
+        print(f"     Product {i + 1}: {own_elasticities[i]:7.4f}")
 
-    print(f"\n   Summary statistics:")
+    print("\n   Summary statistics:")
     print(f"     Mean own-price elasticity: {own_elasticities.mean():7.4f}")
     print(f"     Min:  {own_elasticities.min():7.4f}")
     print(f"     Max:  {own_elasticities.max():7.4f}")
@@ -91,14 +90,15 @@ def main():
     # Check substitution patterns
     print("\n   Substitution patterns (Product 1 to others):")
     for j in range(1, min(5, len(market_1))):
-        within_nest = market_1.iloc[0]['nest_id'] == market_1.iloc[j]['nest_id']
+        within_nest = market_1.iloc[0]["nest_id"] == market_1.iloc[j]["nest_id"]
         elast = elasticity_matrix[0, j]
         nest_type = "same nest" if within_nest else "different nest"
-        print(f"     To Product {j+1} ({nest_type}): {elast:7.5f}")
+        print(f"     To Product {j + 1} ({nest_type}): {elast:7.5f}")
 
     print("\n" + "=" * 70)
     print("ANALYSIS COMPLETE")
     print("=" * 70)
+
 
 if __name__ == "__main__":
     main()
